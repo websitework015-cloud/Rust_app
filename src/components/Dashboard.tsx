@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import UpdateBanner from './UpdateBanner';
 import '../styles/global.css';
 
 interface UserProfile {
@@ -78,6 +79,7 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
 
       {/* Main */}
       <main style={styles.main}>
+          <UpdateBanner />
         {/* Header */}
         <div style={styles.header}>
           <div>
