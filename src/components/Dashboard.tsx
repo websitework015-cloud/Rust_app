@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import UpdateBanner from './UpdateBanner';
+import ThemeToggle from './ThemeToggle';      // ← ADD
+import { useTheme } from '../context/ThemeContext'; // ← ADD
 import '../styles/global.css';
 
 interface UserProfile {
@@ -16,6 +18,7 @@ interface DashboardProps {
 
 export default function Dashboard({ user, onLogout }: DashboardProps) {
   const navigate = useNavigate();
+  const { } = useTheme();
 
   const handleLogout = () => {
     onLogout();
@@ -36,7 +39,15 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
   ];
 
   return (
-    <div style={styles.page}>
+     <div style={{
+      ...styles.page,
+      background: 'var(--bg-primary)',  // ← use CSS var
+    }}>
+      <aside style={{
+        ...styles.sidebar,
+        background: 'var(--sidebar-bg)',
+        borderRight: '1px solid var(--sidebar-border)',
+      }}>
       {/* Sidebar */}
       <aside style={styles.sidebar}>
         <div style={styles.logo}>
@@ -76,21 +87,28 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
           </button>
         </div>
       </aside>
+      </aside>
 
       {/* Main */}
       <main style={styles.main}>
           <UpdateBanner />
         {/* Header */}
-        <div style={styles.header}>
+       <div style={styles.header}>
           <div>
-            <h1 style={styles.greeting}>
-              Good to see you, <span style={styles.name}>{user?.name?.split(' ')[0]}</span> 👋
+            <h1 style={{ ...styles.greeting, color: 'var(--text-primary)' }}>
+              Good to see you,{' '}
+              <span style={styles.name}>{user?.name?.split(' ')[0]}</span> 👋
             </h1>
-            <p style={styles.headerSub}>Here's your account overview</p>
+            <p style={{ ...styles.headerSub, color: 'var(--text-secondary)' }}>
+              Here's your account overview
+            </p>
           </div>
-          <div style={styles.headerBadge}>
-            <span style={styles.greenDot} />
-            Session active
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <ThemeToggle />                    {/* ← ADD */}
+            <div style={styles.headerBadge}>
+              <span style={styles.greenDot} />
+              Session active
+            </div>
           </div>
         </div>
 
