@@ -1,0 +1,15 @@
+
+
+
+
+{
+  "version": "0.1.0",
+  "notes": "Initial release",
+  "pub_date": "2026-06-15T00:00:00Z",
+  "platforms": {
+    "windows-x86_64": {
+      "url": "https://github.com/websitework015-cloud/Rust_app/releases/latest/download/AuthApp_0.1.0_x64-setup.nsis.zip",
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRNkVTZGhUNkRKaVRadnI4dzc2cnhRSlZkamV1RnNPbjNVSFVrcjJWcXllZDN5cERtSUdOWWZnM3BhcjJyUk9MaDJzdHJzNytRRld1bFhISDl0RWxBd2s0QWZsN1hCbndVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzgxNTI2OTAwCWZpbGU6QXV0aEFwcF8wLjEuMF94NjQtc2V0dXAuZXhlCkF2U1ZiSG9YZVBXbWlXMytVWGZoVVNJV2RVd056ZVFSbTBXb3l1MVJaS3dIWnFwTFdTR1I3RUR6R3lDUjUzVDd4ZmwvZ2lJZVl4eTlzNWhONTlNS0NnPT0K"
+    }
+  }
+}
