@@ -24,7 +24,6 @@ pub struct LoginRequest {
 
 // UserProfile reuses User struct — we zero out password_hash before sending
 
-
 // Used for DB queries and login verification
 #[derive(Debug, Serialize, Deserialize, sqlx::FromRow, Clone)]
 pub struct UserProfile {

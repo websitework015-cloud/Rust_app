@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import UpdateBanner from './UpdateBanner';
-import ThemeToggle from './ThemeToggle';      // ← ADD
-import { useTheme } from '../context/ThemeContext'; // ← ADD
+import ThemeToggle from './ThemeToggle';      
+import { useTheme } from '../context/ThemeContext'; 
+import FileManager from './FileManager';
 import '../styles/global.css';
 
 interface UserProfile {
@@ -122,6 +123,12 @@ export default function Dashboard({ user, onLogout }: DashboardProps) {
             </div>
           ))}
         </div>
+
+        <div style={{ marginBottom: 20 }}>
+          <FileManager userId={user!.id} />
+        </div>
+
+        <div style={styles.contentGrid}></div>
 
         {/* Content grid */}
         <div style={styles.contentGrid}>

@@ -29,5 +29,20 @@ pub async fn init_db(app_handle: &tauri::AppHandle) -> Result<SqlitePool, sqlx::
     .execute(&pool)
     .await?;
 
+    sqlx::query(
+        "CREATE TABLE IF NOT EXISTS files (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            original_name TEXT NOT NULL,
+            stored_name TEXT NOT NULL,
+            file_type TEXT NOT NULL,
+            size_bytes INTEGER NOT NULL,
+            uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        )",
+    )
+    .execute(&pool)
+    .await?;
+
     Ok(pool)
 }
