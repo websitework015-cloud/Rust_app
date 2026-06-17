@@ -5418,7 +5418,7 @@ dependencies = [
 
 [[package]]
 name = "tauri-auth-app"
-version = "0.2.1"
+version = "0.3.0"
 dependencies = [
  "bcrypt",
  "calamine",

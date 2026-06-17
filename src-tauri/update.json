@@ -1,11 +1,11 @@
 {
-  "version": "0.2.1",
+  "version": "0.3.0",
   "notes": "Dark/Light theme + bug fixes",
   "pub_date": "2026-06-16T00:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "url": "https://github.com/websitework015-cloud/Rust_app/releases/download/v0.2.1/AuthApp_0.2.1_x64-setup.exe",
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRNkVTZGhUNkRKaVFXd0ljczBzUmFmcU1OME1KN3NzS1UxYkY0cDVMQVJqb2tzaTI2dGxPZTZ3UEhkRUlGc2lJWUNMdTE0R1FOT3RhWHhVcjdBcnYzSWpIZmlMTHRGeGdjPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzgxNTkyOTA2CWZpbGU6QXV0aEFwcF8wLjIuMV94NjQtc2V0dXAuZXhlCnB5dVZWVk1WU0xnTk4wOUpuSEVpSFlmWGhHN2Y3OWR6Nkd1d25vaDFPRmFHOU8xZlB3ZktMQ3VHcmZUc1ZQMDlXd0g5eFd1QldNMDlteXdjSnY2K0NnPT0K"
+      "url": "https://github.com/websitework015-cloud/Rust_app/releases/download/v0.3.0/AuthApp_0.3.0_x64-setup.exe",
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRNkVTZGhUNkRKaWRDT3VWTENlSWpwOFRFQ3JYdWVrbnRleTFBaE8yaTJFNmU4ay9FS1JGc3lKc1MwZ0NWVG1zR29kV0Mwc2M3ZVVVWlRJeFpPcTE5RHdua2g4c3dJVEFzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzgxNjk4NzI4CWZpbGU6QXV0aEFwcF8wLjMuMF94NjQtc2V0dXAuZXhlCm9vOGdsenBKKy94NUdGbHNUNFpaK2ovcHJDTUNQOGlKZ25UdXY3WUs3b2NNa280aHhCb3JQN1Z4WC9zdEtvQmNadS9MN1FYb0xUOElUVzNBYldTWENBPT0K"
     }
   }
 }
