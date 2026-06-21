@@ -6,11 +6,12 @@ import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
 import Dashboard from './components/Dashboard';
 
-interface UserProfile {
+export interface UserProfile {
   id: number;
   name: string;
   email: string;
-  created_at: string;
+  credits: number;
+  created_at: string | null;
 }
 
 function App() {

@@ -1,11 +1,11 @@
 use crate::models::cdr::*;
 use calamine::{open_workbook, Reader, Xlsx, Xls};
-use chrono::{NaiveDateTime};
+use chrono::NaiveDateTime;
 use polars::prelude::*;
 use std::collections::HashMap;
 use std::path::Path;
 use tauri::{AppHandle, Manager, State};
-use sqlx::SqlitePool;
+use sqlx::{MySqlPool, SqlitePool};
 
 // ---------- Column name normalization ----------
 // Robi CDR headers, tolerant of case/spacing variants
@@ -304,15 +304,29 @@ fn analyze(records: &[CdrRecord]) -> CdrAnalysisResult {
 #[tauri::command]
 pub async fn analyze_cdr(
     app_handle: AppHandle,
-    pool: State<'_, SqlitePool>,
+    sqlite_pool: State<'_, SqlitePool>,
+    mysql_pool: State<'_, MySqlPool>,
     file_id: i64,
+    user_id: i64,
 ) -> Result<CdrAnalysisResult, String> {
+    // Check the user has at least 1 credit
+    let credits: (i64,) = sqlx::query_as("SELECT credits FROM users WHERE id = ?")
+        .bind(user_id)
+        .fetch_one(mysql_pool.inner())
+        .await
+        .map_err(|e| e.to_string())?;
+
+    if credits.0 < 1 {
+        return Err("Not enough credits. Please buy credits to analyze files.".to_string());
+    }
+
+    // Look up the file in SQLite
     let record: crate::models::file_record::FileRecord = sqlx::query_as(
         "SELECT id, user_id, original_name, stored_name, file_type, size_bytes, uploaded_at
          FROM files WHERE id = ?",
     )
     .bind(file_id)
-    .fetch_one(pool.inner())
+    .fetch_one(sqlite_pool.inner())
     .await
     .map_err(|e| e.to_string())?;
 
@@ -332,6 +346,25 @@ pub async fn analyze_cdr(
 
     let cdr_records = map_to_cdr_records(raw_rows);
     let result = analyze(&cdr_records);
+
+    // Deduct 1 credit in MySQL
+    sqlx::query("UPDATE users SET credits = credits - 1 WHERE id = ?")
+        .bind(user_id)
+        .execute(mysql_pool.inner())
+        .await
+        .map_err(|e| e.to_string())?;
+
+    // Save analysis to local SQLite history
+    let json = serde_json::to_string(&result).map_err(|e| e.to_string())?;
+    sqlx::query(
+        "INSERT INTO analyzed_files (user_id, file_name, analysis_json) VALUES (?, ?, ?)",
+    )
+    .bind(user_id)
+    .bind(&record.original_name)
+    .bind(&json)
+    .execute(sqlite_pool.inner())
+    .await
+    .map_err(|e| e.to_string())?;
 
     Ok(result)
 }

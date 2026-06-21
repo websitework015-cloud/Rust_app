@@ -1,16 +1,15 @@
-use crate::models::user::UserProfile;
+use crate::models::user::{MySqlUserRow, UserProfile};
 use bcrypt::{hash, verify, DEFAULT_COST};
-use sqlx::SqlitePool;
-use tauri::State;
+use sqlx::{MySqlPool, SqlitePool};
+use tauri::{AppHandle, Manager, State};
 
 #[tauri::command]
 pub async fn register(
-    pool: State<'_, SqlitePool>,
+    pool: State<'_, MySqlPool>,
     name: String,
     email: String,
     password: String,
 ) -> Result<String, String> {
-    // Check if email already exists
     let existing: Option<(i64,)> = sqlx::query_as("SELECT id FROM users WHERE email = ?")
         .bind(&email)
         .fetch_optional(pool.inner())
@@ -21,10 +20,8 @@ pub async fn register(
         return Err("Email already registered".to_string());
     }
 
-    // Hash password
     let password_hash = hash(&password, DEFAULT_COST).map_err(|e| e.to_string())?;
 
-    // Insert user
     sqlx::query("INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)")
         .bind(&name)
         .bind(&email)
@@ -38,33 +35,58 @@ pub async fn register(
 
 #[tauri::command]
 pub async fn login(
-    pool: State<'_, SqlitePool>,
+    mysql_pool: State<'_, MySqlPool>,
+    sqlite_pool: State<'_, SqlitePool>,
+    app_handle: AppHandle,
     email: String,
     password: String,
 ) -> Result<UserProfile, String> {
-    // Find user by email
-    let user: Option<UserProfile> = sqlx::query_as(
-        "SELECT id, name, email, password_hash, created_at FROM users WHERE email = ?",
+    let row: Option<MySqlUserRow> = sqlx::query_as(
+        "SELECT id, name, email, password_hash, credits FROM users WHERE email = ?",
     )
     .bind(&email)
-    .fetch_optional(pool.inner())
+    .fetch_optional(mysql_pool.inner())
     .await
     .map_err(|e| e.to_string())?;
 
-    let user = user.ok_or("Invalid email or password")?;
+    let row = row.ok_or("Invalid email or password")?;
 
-    // Verify password
-    let valid = verify(&password, &user.password_hash).map_err(|e| e.to_string())?;
-
+    let valid = verify(&password, &row.password_hash).map_err(|e| e.to_string())?;
     if !valid {
         return Err("Invalid email or password".to_string());
     }
 
+    // Clear uploaded files on every login so the dashboard always starts blank
+    clear_uploaded_files(sqlite_pool.inner(), &app_handle, row.id).await;
+
     Ok(UserProfile {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        password_hash: String::new(), // don't expose hash to frontend
-        created_at: user.created_at,
+        id: row.id,
+        name: row.name,
+        email: row.email,
+        password_hash: String::new(),
+        credits: row.credits,
+        created_at: None,
     })
+}
+
+async fn clear_uploaded_files(pool: &SqlitePool, app_handle: &AppHandle, user_id: i64) {
+    // Fetch stored filenames so we can delete them from disk too
+    let stored: Vec<(String,)> =
+        sqlx::query_as("SELECT stored_name FROM files WHERE user_id = ?")
+            .bind(user_id)
+            .fetch_all(pool)
+            .await
+            .unwrap_or_default();
+
+    if let Ok(app_dir) = app_handle.path().app_data_dir() {
+        let uploads_dir = app_dir.join("uploads");
+        for (name,) in &stored {
+            let _ = std::fs::remove_file(uploads_dir.join(name));
+        }
+    }
+
+    let _ = sqlx::query("DELETE FROM files WHERE user_id = ?")
+        .bind(user_id)
+        .execute(pool)
+        .await;
 }

@@ -1,14 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, sqlx::FromRow, Clone)]
-pub struct User {
-    pub id: i64,
-    pub name: String,
-    pub email: String,
-    pub password_hash: String,
-    pub created_at: Option<String>,
-}
-
 #[derive(Debug, Deserialize)]
 pub struct RegisterRequest {
     pub name: String,
@@ -22,14 +13,23 @@ pub struct LoginRequest {
     pub password: String,
 }
 
-// UserProfile reuses User struct — we zero out password_hash before sending
-
-// Used for DB queries and login verification
-#[derive(Debug, Serialize, Deserialize, sqlx::FromRow, Clone)]
+// Returned to the frontend after login — password_hash is always cleared before sending
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UserProfile {
     pub id: i64,
     pub name: String,
     pub email: String,
     pub password_hash: String,
+    pub credits: i64,
     pub created_at: Option<String>,
+}
+
+// Used only internally for MySQL row decoding
+#[derive(Debug, sqlx::FromRow)]
+pub struct MySqlUserRow {
+    pub id: i64,
+    pub name: String,
+    pub email: String,
+    pub password_hash: String,
+    pub credits: i64,
 }
